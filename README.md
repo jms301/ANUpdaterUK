@@ -5,9 +5,9 @@ This is done via a postcode lookup database stored on cloudflare d1.
 
 ## Requirements:
 
-Cloudflare Workers (free tier is probably good enough!)
-A Postcode Lookup database (I've included the one I've generated but give no guarantee that it's correct!)
-An Action Network partner account (For the API and Webhook features)
+- Cloudflare Workers (free tier is probably good enough!)
+- A Postcode Lookup database (I've included the one I've generated but give no guarantee that it's correct!)
+- An Action Network partner account (For the API and Webhook features)
 
 
 ## Dev Setup: 
@@ -23,7 +23,6 @@ Create a cloudflare account
 ### On Cloudflare Workers you need:
 
 - A D1 Database: 'pcode\_wpc' bound to "DB"
-- A queue: 'an-updated-users' 
 - A secret 'AN\_API\_KEY' storing your AN API key. 
 
 ```console
