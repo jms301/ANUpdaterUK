@@ -105,7 +105,7 @@ export default {
    return new Response(null, {status: 200});
 
   },
-  async queue(batch, env) {
+  async queue(batch, env, ctx) {
     const validatePerson = validateANPerson;
     const baseAnUrl =  "https://actionnetwork.org/api/v2/people/";
     const init = {
