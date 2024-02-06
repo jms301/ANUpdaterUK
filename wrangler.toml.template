@@ -1,0 +1,29 @@
+name = "an-updater-v2"
+main = "src/index.js"
+compatibility_date = "2024-01-17"
+
+kv_namespaces = [
+  { binding = "AN_U_KV", id = "<ADD KV ID HERE>" }
+]
+
+# Bind a Queue producer. Use this binding to schedule an arbitrary task that may be processed later by a Queue consumer.
+# Docs: https://developers.cloudflare.com/queues/get-started
+
+[[queues.producers]]
+binding = "users_queue"
+queue = "an-updated-users"
+
+# Bind a Queue consumer. Queue Consumers can retrieve tasks scheduled by Producers to act on them.
+# Docs: https://developers.cloudflare.com/queues/get-started
+[[queues.consumers]]
+queue = "an-updated-users"
+# Optional: Configure batching and retries: https://developers.cloudflare.com/queues/learning/batching-retries/
+# max_batch_size = 10
+# max_batch_timeout = 30
+# max_retries = 10
+# dead_letter_queue = "my-queue-dlq"
+
+[[d1_databases]]
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "pcode_wpc"
+database_id = "<ADD DB ID HERE>"
