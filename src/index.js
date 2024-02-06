@@ -60,7 +60,6 @@ export default {
     const payloads = await req.json();
     //This will check the payload is valid and strip unvalidated params
     if(!validateWH(payloads)) {
-      console.log(validateWH.errors);
       return new Response(null, {status: 400});
     }
 
@@ -116,7 +115,6 @@ export default {
       },
     };
 
-    console.log(batch.messages);
     // get each users AN record (don't trust the webhook payloads!)
 
     const anPeoplePms = batch.messages.map(async (msg) => {
@@ -174,12 +172,10 @@ export default {
       //already been set
       if( person?.custom_fields?.["Parliamentary_Constituency_2024"] ==
         data.results[0].name_an ) {
-        console.log("already set: ", data.results[0].name_an);
         msg.ack();
         continue;
       }
 
-      console.log("updating: ", data.results[0].name_an);
       const body = {
         "custom_fields": {
           "Parliamentary_Constituency_2024" : data.results[0].name_an,
