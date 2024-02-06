@@ -22,9 +22,9 @@ Create a cloudflare account
 
 ### On Cloudflare Workers you need:
 
-* A D1 Database: 'pcode\_wpc' bound to "DB"
-* A queue: 'an-updated-users' 
-* A secret 'AN\_API\_KEY' storing your AN API key. 
+- A D1 Database: 'pcode\_wpc' bound to "DB"
+- A queue: 'an-updated-users' 
+- A secret 'AN\_API\_KEY' storing your AN API key. 
 
 ```console
 :~$ cp dev.env .dev.env 
@@ -46,15 +46,16 @@ Load in a short test db (local db can't handle the full one)
 ```console
 :~$ npx wrangler d1 execute pcode_wpc --file="./data/pcodes_wpc.short.sql" --local
 ```
+edit .dev.env to add in your AN API key
+
 
 > [!CAUTION]
 > The dev server **WILL** connect to and modify data in the Action Network account you give it an API key for! 
 
-
-edit .dev.env to add in your AN API key
-
-
 ```console
 :~$ npx wrangler dev
 ```
+> [!CAUTION]
+> The dev server **WILL** connect to and modify data in the Action Network account you give it an API key for! 
+
 
