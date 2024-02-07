@@ -22,7 +22,7 @@ async function gatherResponse(response) {
 
 async function lookupPostcodes(msgArr, env) {
 
-  const pc_lkup = await env.DB.prepare('SELECT postcode, name_an, name_an_cy, pcode_wpc_wpclist.short_code, region, con_type, electorate FROM pcode_wpc_wpclist LEFT OUTER JOIN wpc_names ON pcode_wpc_wpclist.short_code = wpc_names.short_code WHERE postcode = ?1');
+  const pc_lkup = await env.DB.prepare('SELECT postcode, name_an, name_an_cy, pcode_wpc_wpclist.short_code, region, certain FROM pcode_wpc_wpclist LEFT OUTER JOIN wpc_names ON pcode_wpc_wpclist.short_code = wpc_names.short_code WHERE postcode = ?1');
 
 
   const rows = await env.DB.batch( msgArr.map((msg) => {
@@ -132,13 +132,13 @@ export default {
       // Is this a record that needs processing?
       if(typeof person === "string") {
         // typeof string === not a JSON object returned
-         console.error("Bad response from AN person lookup: ", person);
+         console.warn("Bad response from AN person lookup: ", person);
         msg.retry();
         return null;
 
       } else if(!validatePerson(person)) {
         // The if also strips non-validated data from the person object
-        console.error("AN person did not validate: ", validatePerson.errors);
+        console.warn("AN person did not validate: ", validatePerson.errors);
         msg.retry();
         return null;
 
@@ -196,6 +196,7 @@ export default {
           "Parliamentary_Constituency_2024" : data.results[0].name_an,
           "P_Constituency_Cy" : data.results[0].name_an_cy,
           "P_Constituency_Region" : data.results[0].region,
+          "P_Constituency_Certain" : data.results[0].certain,
           "Constituency Source" : "AN Auto Updater v2"
         }
       }
