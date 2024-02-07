@@ -1,7 +1,21 @@
 # AN Updater UK
 Action Network Updater is a microservice which runs on cloudflare workers and adds UK Parliamentary Constituency data to Action Network Activist records. 
 
-This is done via a postcode lookup database stored on cloudflare d1. 
+## How does it work? 
+
+- Recieve Action Network Webhook payload to discover activists who's records have changed.
+- Check (via naive regex) to see if there is a valid postcode in this update.
+- Queue up all userIds that might need an update
+
+- Processing the queue
+- Connect to AN API to get each users record
+- Lookup all the postcodes for these users in the D1 Database
+- If the users "Parliamentary\_Constituency\_2024" field doesn't match the lookup then update: 
+  - Parliamentary\_Constituency\_2024  - The constituency name (removing non ascii characters because AN can't cope)
+  - P\_Constituency\_Certain - True/False If the users postcode could match other constituencies.
+  - P\_Constituency\_Cy - The welsh constituency name (removing non-ascii characters because...)
+  - P\_Constituency\_Region - The English region or else the country name (Scotland, Wales, Northern Ireland)
+
 
 ## Requirements:
 
@@ -57,4 +71,5 @@ edit .dev.env to add in your AN API key
 > [!CAUTION]
 > The dev server **WILL** connect to and modify data in the Action Network account you give it an API key for! 
 
+nb. The postcode constituency data is licensed by ONS and Ordinance Survey see the LICENSE file for details. 
 
