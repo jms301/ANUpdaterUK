@@ -102,16 +102,17 @@ export default {
       //add this userID to the queue.
       toQueueUp.push({"body": {
         "usr_id": userId
-// don't trust the payload because webhook is insecure.
-//        "pcode": postcode,
-//        "old_constituency": old_constituency
+          // don't trust the payload because webhook is insecure.
+          //"pcode": postcode,
       }});
     }
 
-   //add to the queue without blocking.
-   ctx.waitUntil(await env.users_queue.sendBatch(toQueueUp))
+    //add to the queue without blocking.
+    if( toQueueUp.length > 0) {
+      ctx.waitUntil(await env.users_queue.sendBatch(toQueueUp))
+    }
 
-   return new Response(null, {status: 200});
+    return new Response(null, {status: 200});
 
   },
   async queue(batch, env, ctx) {
@@ -144,6 +145,7 @@ export default {
 
       } else if (person?.custom_fields?.["Lock_Updates"]?.length > 2 ) {
         // check if updates are locked undefined > 2 is false
+        console.warn("Person is locked.");
         msg.ack();
         return null;
 
@@ -172,12 +174,14 @@ export default {
 
       //db lookup failed
       if( !data.success) {
+        console.log("database lookup failed.")
         msg.retry();
         continue;
       }
 
       //db lookup no results
       if(data.results.length == 0) {
+        console.log("Postcode not found")
         msg.ack();
         continue;  // no more to do here
       }
@@ -185,6 +189,7 @@ export default {
       //already been set
       if( person?.custom_fields?.["Parliamentary_Constituency_2024"] ==
         data.results[0].name_an ) {
+        console.log("Constituency already set.")
         msg.ack();
         continue;
       }
