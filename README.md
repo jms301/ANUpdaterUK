@@ -7,7 +7,7 @@ Action Network Updater is a microservice which runs on cloudflare workers and ad
 - Check (via naive regex) to see if there is a valid postcode in this update.
 - Queue up all userIds that might need an update
 
-- Processing the queue
+**Processing the queue**
 - Connect to AN API to get each users record
 - Lookup all the postcodes for these users in the D1 Database
 - If the users "Parliamentary\_Constituency\_2024" field doesn't match the lookup then update: 
