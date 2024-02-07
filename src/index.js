@@ -74,8 +74,11 @@ export default {
           payload?.["osdi:donation"] ||
           payload?.["osdi:outreach"];
 
+      // normalize postcode
       const postcode = payload.person?.postal_addresses?.[0]?.postal_code?.replaceAll(pcodeFilter, "").toUpperCase();
 
+      // The payload includes all the data that was submitted to the
+      // AN form so if there is no useful postcode in it we can skip this person.
       if(postcode == null || !postcode.match(pcodeValid)) {
         //we can't do anything with this update
         continue;
@@ -83,13 +86,15 @@ export default {
 
       const anPersonUrl =  "https://actionnetwork.org/api/v2/people/";
       if(!payload._links["osdi:person"].href.startsWith(anPersonUrl)) {
-        // this is really weird!
+        // The given link doesn't start with AN API so this maybe is someone trying to do something nefarious.
         return new Response(null, {status: 400});
       }
 
+      // Pull the user ID from the link, strip the leading AN string and then replace non-ID characters.
       const userId = payload._links["osdi:person"].href.substring(
         anPersonUrl.length ).replaceAll(userIdFilter, "");
 
+      //add this userID to the queue.
       toQueueUp.push({"body": {
         "usr_id": userId
 // don't trust the payload because webhook is insecure.
@@ -98,6 +103,7 @@ export default {
       }});
     }
 
+   //add to the queue without blocking.
    ctx.waitUntil(await env.users_queue.sendBatch(toQueueUp))
 
    return new Response(null, {status: 200});
@@ -113,14 +119,12 @@ export default {
       },
     };
 
-    // get each users AN record (don't trust the webhook payloads!)
-
+    // Getting all users AN records (don't trust the webhook payloads!)
     const anPeoplePms = batch.messages.map(async (msg) => {
-      const response = await fetch(baseAnUrl+msg.body.usr_id, init);
+      const response = await fetch(baseAnUrl+msg.body.usr_id.replaceAll(userIdFilter, ""), init);
       const person = await gatherResponse(response);
 
       // Is this a record that needs processing?
-      //
       if(typeof person === "string" ||
         !validatePerson(person)) {
         // typeof string === not a JSON object returned
@@ -139,6 +143,7 @@ export default {
       }
     });
 
+    // This should allow the requests to AN to happen in parralel (so you do need a limit on the batch sizes!)
     const messages = await Promise.all(anPeoplePms).then( (values) => {
       return values.filter((x) => { return x !== null});
     });
