@@ -51,6 +51,7 @@ export default {
     const contentType = req.headers.get("content-type") || "";
     if(req.method != "POST" ||
       !contentType.includes("application/json")) {
+      console.error("Bad request: ", req);
       return new Response(null, {status: 400});
     }
 
@@ -60,6 +61,7 @@ export default {
     const payloads = await req.json();
     //This will check the payload is valid and strip unvalidated params
     if(!validateWH(payloads)) {
+      console.error("WH Payload did not validate: ", validateWH.errors);
       return new Response(null, {status: 400});
     }
 
@@ -80,6 +82,7 @@ export default {
       // The payload includes all the data that was submitted to the
       // AN form so if there is no useful postcode in it we can skip this person.
       if(postcode == null || !postcode.match(pcodeValid)) {
+        console.warn("Postcode I couldn't process: ", postcode);
         //we can't do anything with this update
         continue;
       }
@@ -87,6 +90,7 @@ export default {
       const anPersonUrl =  "https://actionnetwork.org/api/v2/people/";
       if(!payload._links["osdi:person"].href.startsWith(anPersonUrl)) {
         // The given link doesn't start with AN API so this maybe is someone trying to do something nefarious.
+        console.error("Payload contains weird url for person: ", payload._links["osdi:person"].href);
         return new Response(null, {status: 400});
       }
 
@@ -94,6 +98,7 @@ export default {
       const userId = payload._links["osdi:person"].href.substring(
         anPersonUrl.length ).replaceAll(userIdFilter, "");
 
+      console.log("Queueing up: ", userId, " with: ", postcode);
       //add this userID to the queue.
       toQueueUp.push({"body": {
         "usr_id": userId
@@ -125,10 +130,15 @@ export default {
       const person = await gatherResponse(response);
 
       // Is this a record that needs processing?
-      if(typeof person === "string" ||
-        !validatePerson(person)) {
+      if(typeof person === "string") {
         // typeof string === not a JSON object returned
-        // validate the return  - also strips unvalidated fields
+         console.error("Bad response from AN person lookup: ", person);
+        msg.retry();
+        return null;
+
+      } else if(!validatePerson(person)) {
+        // The if also strips non-validated data from the person object
+        console.error("AN person did not validate: ", validatePerson.errors);
         msg.retry();
         return null;
 
@@ -178,6 +188,8 @@ export default {
         msg.ack();
         continue;
       }
+
+      console.log("Updating: ", person["_links"]["self"]["href"], data.results[0].postcode, "with", data.results[0].name_an);
 
       const body = {
         "custom_fields": {
