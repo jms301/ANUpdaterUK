@@ -108,14 +108,6 @@ const payloadSchema = {
               }],
               minItems: 0,
               additionalItems: true
-            }, 
-            "custom_fields": { 
-              type: "object",
-              properties: { 
-                "Parliamentary_Constituency_2024": { 
-                  type: "string"
-                }
-              }
             }
           }
         }

@@ -90,8 +90,6 @@ export default {
       const userId = payload._links["osdi:person"].href.substring(
         anPersonUrl.length ).replaceAll(userIdFilter, "");
 
-      const old_constituency = payload.person?.custom_fields?.Parliamentary_Constituency_2024;
-
       toQueueUp.push({"body": {
         "usr_id": userId
 // don't trust the payload because webhook is insecure.
