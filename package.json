@@ -4,12 +4,11 @@
   "private": true,
   "scripts": {
     "schema": "node src/schema-compile.js",
-    "deploy": "wrangler deploy",
     "dev": "wrangler dev",
     "start": "wrangler dev"
   },
   "devDependencies": {
     "ajv": "^8.12.0",
-    "wrangler": "^3.26.0"
+    "wrangler": "^3.27.0"
   }
 }
