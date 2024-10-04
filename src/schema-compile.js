@@ -163,6 +163,12 @@ const personSchema = {
         "Parliamentary_Constituency_2024": {
           type: "string"
         },
+        "LA_District_23" : {
+          type: "string"
+        },
+         "LA_Ward_23" : {
+          type: "string"
+        },
         "Lock_Updates" : {
           type: "string"
         },

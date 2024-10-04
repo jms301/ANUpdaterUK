@@ -22,7 +22,7 @@ async function gatherResponse(response) {
 
 async function lookupPostcodes(msgArr, env) {
 
-  const pc_lkup = await env.DB.prepare('SELECT postcode, name_an, name_an_cy, pcode_wpc_wpclist.short_code, region, certain FROM pcode_wpc_wpclist LEFT OUTER JOIN wpc_names ON pcode_wpc_wpclist.short_code = wpc_names.short_code WHERE postcode = ?1');
+  const pc_lkup = await env.DB.prepare('SELECT postcode, name_an, name_an_cy, pcode_wpc_wpclist.short_code, region, certain, oslaua23, osward23 FROM pcode_wpc_wpclist LEFT OUTER JOIN wpc_names ON pcode_wpc_wpclist.short_code = wpc_names.short_code WHERE postcode = ?1');
 
 
   const rows = await env.DB.batch( msgArr.map((msg) => {
@@ -52,7 +52,7 @@ export default {
     if(req.method != "POST" ||
       !contentType.includes("application/json")) {
       console.error("Bad request: ", req);
-      return new Response(null, {status: 400});
+      return new Response("Invalid Request", {status: 400});
     }
 
     const validateWH = validateANPayloads;
@@ -75,6 +75,8 @@ export default {
           payload?.["action_network:upload"] ||
           payload?.["osdi:donation"] ||
           payload?.["osdi:outreach"];
+
+      console.log("Got webhook payload for:", payload["_links"]["self"]["href"]);
 
       // normalize postcode
       const postcode = payload.person?.postal_addresses?.[0]?.postal_code?.replaceAll(pcodeFilter, "").toUpperCase();
@@ -186,10 +188,15 @@ export default {
         continue;  // no more to do here
       }
 
-      //already been set
+	    //already been set
       if( person?.custom_fields?.["Parliamentary_Constituency_2024"] ==
-        data.results[0].name_an ) {
-        console.log("Constituency already set.")
+          data.results[0].name_an &&
+        person?.custom_fields?.["LA_District_23"] ==
+          data.results[0].oslaua23 &&
+        person?.custom_fields?.["LA_Ward_23"] ==
+          data.results[0].osward23
+			) {
+        console.log("Data already set.")
         msg.ack();
         continue;
       }
@@ -202,6 +209,8 @@ export default {
           "P_Constituency_Cy" : data.results[0].name_an_cy,
           "P_Constituency_Region" : data.results[0].region,
           "P_Constituency_Certain" : data.results[0].certain,
+					"LA_District_23" : data.results[0].oslaua23,
+					"LA_Ward_23" : data.results[0].osward23,
           "Constituency Source" : "AN Auto Updater v2"
         }
       }

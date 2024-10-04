@@ -4,12 +4,15 @@ CREATE TABLE pcode_wpc_wpclist(
   "postcode" TEXT,
   "short_code" TEXT,
   "cons_list" TEXT,
-  "certain" TEXT
+  "certain" TEXT,
+	"oslaua23" TEXT,
+	"osward23" TEXT
 );
-INSERT INTO pcode_wpc_wpclist VALUES('SO10DE','UKPARL.2025.SOT','[''UKPARL.2025.SOT'']','True');
-INSERT INTO pcode_wpc_wpclist VALUES('ZE39JX','UKPARL.2025.OAS','[''UKPARL.2025.OAS'']','True');
-INSERT INTO pcode_wpc_wpclist VALUES('ZE39JY','UKPARL.2025.OAS','[''UKPARL.2025.OAS'']','True');
-INSERT INTO pcode_wpc_wpclist VALUES('ZE39JZ','UKPARL.2025.OAS','[''UKPARL.2025.OAS'']','True');
+INSERT INTO pcode_wpc_wpclist VALUES('SO10DE','UKPARL.2025.SOT','[''UKPARL.2025.SOT'']','True','E06000045','E05015496');
+INSERT INTO pcode_wpc_wpclist VALUES('ZE39JX','UKPARL.2025.OAS','[''UKPARL.2025.OAS'']','True','S12000027','S13003155');
+INSERT INTO pcode_wpc_wpclist VALUES('ZE39JY','UKPARL.2025.OAS','[''UKPARL.2025.OAS'']','True','S12000027','S13003155');
+INSERT INTO pcode_wpc_wpclist VALUES('ZE39JZ','UKPARL.2025.OAS','[''UKPARL.2025.OAS'']','True','S12000027','S13003155');
+
 CREATE TABLE wpc_names(
   "full_code" TEXT,
   "short_code" TEXT,
