@@ -17,3 +17,10 @@ queue = "an-updated-users"
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "pcode_wpc"
 database_id = "<ADD DB ID HERE>"
+
+[placement]
+mode = "smart"
+
+[limits]
+cpu_ms = 30
+
