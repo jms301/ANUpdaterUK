@@ -3,72 +3,72 @@ const path = require("path")
 const Ajv = require("ajv")
 const standaloneCode = require("ajv/dist/standalone").default
 
-  
+
 const payloadSchema = {
   $id: "#/definitions/validate-an-payloads",
   $schema: "http://json-schema.org/draft-07/schema",
   type: "array",
   items: {
     "oneOf": [
-      { 
-        type: "object", 
-        properties: { 
+      {
+        type: "object",
+        properties: {
           "osdi:signature" : {"$ref": "#/$defs/an_items"},
-          "idempotency_key" : { 
+          "idempotency_key" : {
             type: "string"
           }
         },
         required:  ["osdi:signature", "idempotency_key"]
-      },{ 
-        type: "object", 
-        properties: { 
+      },{
+        type: "object",
+        properties: {
           "osdi:attendance" : {"$ref": "#/$defs/an_items"},
-          "idempotency_key" : { 
+          "idempotency_key" : {
             type: "string"
           }
         },
         required: ["osdi:attendance", "idempotency_key"]
-      },{ 
-        type: "object", 
-        properties: { 
+      },{
+        type: "object",
+        properties: {
           "osdi:submission" : {"$ref": "#/$defs/an_items"},
-          "idempotency_key" : { 
+          "idempotency_key" : {
             type: "string"
           }
         },
         required: ["osdi:submission", "idempotency_key"]
-      },{ 
-        type: "object", 
-        properties: { 
+      },{
+        type: "object",
+        properties: {
           "action_network:action" : {"$ref": "#/$defs/an_items"},
-          "idempotency_key" : { 
+          "idempotency_key" : {
             type: "string"
           }
         },
         required: ["action_network:action", "idempotency_key"]
-      },{ 
-        type: "object", 
-        properties: { 
+      },{
+        type: "object",
+        properties: {
           "action_network:upload" : {"$ref": "#/$defs/an_items"},
-          "idempotency_key" : { 
+          "idempotency_key" : {
             type: "string"
           }
         },
         required: ["action_network:upload", "idempotency_key"]
-      },{ 
-        type: "object", 
-        properties: { 
+      },{
+        type: "object",
+        properties: {
           "osdi:donation" : {"$ref": "#/$defs/an_items"},
-          "idempotency_key" : { 
+          "idempotency_key" : {
             type: "string"
           }
         },
         required: ["osdi:donation", "idempotency_key"]
-      },{ 
-        type: "object", 
-        properties: { 
+      },{
+        type: "object",
+        properties: {
           "osdi:outreach" : {"$ref": "#/$defs/an_items"},
-          "idempotency_key" : { 
+          "idempotency_key" : {
             type: "string"
           }
         },
@@ -76,34 +76,44 @@ const payloadSchema = {
       }
     ]
   },
-  "$defs": { 
-    "an_items" : { 
-      type: "object", 
+  "$defs": {
+    "an_items" : {
+      type: "object",
       properties: {
-        "_links": { 
-          type: "object", 
-          properties: { 
-            "osdi:person": { 
-              type: "object", 
-              properties: { 
-                "href": { 
-                  type: "string", 
+        "_links": {
+          type: "object",
+          properties: {
+            "osdi:person": {
+              type: "object",
+              properties: {
+                "href": {
+                  type: "string",
+                }
+              },
+              required: ["href"]
+            },
+            "self": {
+              type: "object",
+              properties: {
+                "href": {
+                  type: "string",
                 }
               },
               required: ["href"]
             }
+
           },
-          required: ["osdi:person"]
+          required: ["osdi:person", "self"]
         },
-        "person" : { 
+        "person" : {
           type: "object",
-          properties: { 
+          properties: {
             "postal_addresses": {
               type: "array",
               items: [{
-                type: "object", 
-                properties: { 
-                  "postal_code": { type: "string" } 
+                type: "object",
+                properties: {
+                  "postal_code": { type: "string" }
                 }
               }],
               minItems: 0,
@@ -121,15 +131,15 @@ const personSchema = {
   $id: "#/definitions/validate-an-person",
   $schema: "http://json-schema.org/draft-07/schema",
   type: "object",
-  properties: { 
-    "_links": { 
-      type: "object", 
-      properties: { 
-        "self": { 
-          type: "object", 
-          properties: { 
+  properties: {
+    "_links": {
+      type: "object",
+      properties: {
+        "self": {
+          type: "object",
+          properties: {
             "href": { type: "string" }
-          }, 
+          },
           required: ["href"]
         }
       },
@@ -138,19 +148,19 @@ const personSchema = {
     "postal_addresses": {
       type: "array",
       items: [{
-        type: "object", 
-        properties: { 
-          "postal_code": { type: "string" } 
+        type: "object",
+        properties: {
+          "postal_code": { type: "string" }
         },
         required: ["postal_code"]
       }],
       minItems: 1,
       additionalItems: true
-    }, 
-    "custom_fields": { 
+    },
+    "custom_fields": {
       type: "object",
-      properties: { 
-        "Parliamentary_Constituency_2024": { 
+      properties: {
+        "Parliamentary_Constituency_2024": {
           type: "string"
         },
         "Lock_Updates" : {
@@ -159,12 +169,12 @@ const personSchema = {
       }
     }
   },
-  required: ["_links", "postal_addresses"] 
+  required: ["_links", "postal_addresses"]
 }
 
 
 const ajv = new Ajv({
-  schemas: [payloadSchema, personSchema], 
+  schemas: [payloadSchema, personSchema],
   code: {source: true, esm: true},
   strictTuples: false,
   removeAdditional: "all"
